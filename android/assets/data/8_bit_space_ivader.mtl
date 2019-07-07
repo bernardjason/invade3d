@@ -1,0 +1,10 @@
+# Material file for 8_bit_space_ivader.obj
+
+newmtl green
+	Ns 0
+	d 1
+	illum 2
+	Kd -1.0 0.8 -1.0
+	Ks 0.0 0.0 0.0
+	Ka 0.2 0.2 0.2
+

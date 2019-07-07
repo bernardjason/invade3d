@@ -1,0 +1,12 @@
+|
+|
+|
+|
+|
+|||||||0,3,land|0,4,land|0,5,land|0,6,land|
+||||||0,3,land|0,4,land|0,5,land|0,6,land|0,7,land|
+|0,9,land|0,8,land|0,7,land|0,6,land|0,5,land|0,2,land|0,3,land|0,4,land|0,5,land|0,6,land|0,7,land|
+0,5,land|0,2,6x16x6,xcuboid,xball|0,1,6x16x6,xcuboid,xball|0,11,land|0,10,land|0,9,land|0,9,land|0,7,8x24x8,xcuboid,xball|0,6,land|
+0,5,land|0,4,land|0,5,land|0,6,land|0,7,land|0,5,land|0,4,land|0,5,land|0,6,land|0,7,land|
+0,2,land|0,3,land|10,2,10x10x10,ball|0,4,land|0,5,land|0,6,land|0,7,land|0,8,land|0,9,land|0,10,land|
+0,8,land|0,2,land|0,3,land|0,5,land|0,4,land|0,5,land|0,6,land|0,7,land|
