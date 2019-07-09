@@ -9,7 +9,7 @@ import org.bjason.gamelogic.basic.shape.{FuelBase, PlayerSprite}
 import org.bjason.gamelogic.{GameInformation, MasterInvader, MinionInvader}
 import org.bjason.socket.{GameMessage, Websocket}
 
-case class AlienMissileMovement(direction: Vector3, val speed: Float = 75f) extends Movement {
+case class AlienMissileMovement(direction: Vector3, val speed: Float = 50f) extends Movement {
 
   private val translation = new Vector3
   var objectToControl:shape.Basic=null
@@ -31,7 +31,6 @@ case class AlienMissileMovement(direction: Vector3, val speed: Float = 75f) exte
   }
 
   override def collision(me: shape.Basic, other:shape.Basic) {
-    println("XXXXXXXXXXXXXXXXXXXXXX ",other)
     other match {
       case b: PlayerSprite => //gamelogic.Controller.addToDead(other)
         gamelogic.Sound.playScoop

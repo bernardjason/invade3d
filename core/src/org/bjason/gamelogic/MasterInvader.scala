@@ -168,6 +168,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
     val whichOne=(Math.random() * 1000 % targetList.size).toInt
 
     val target = targetList(whichOne).position
+
     val startHere = me.cpy()
     val direction = startHere.sub(target).nor().scl(-1)
     val m = new AlienMissileMovement(direction = direction)

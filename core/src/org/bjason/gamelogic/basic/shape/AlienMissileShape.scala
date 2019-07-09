@@ -10,7 +10,7 @@ import org.bjason.gamelogic.basic
 import org.bjason.gamelogic.basic.move.Movement
 import org.bjason.socket.{JsonObject, State}
 
-case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radius: Float = 16, var movement: Movement, override val id:String = basic.shape.Basic.getId) extends Basic  {
+case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radius: Float = 12, var movement: Movement, override val id:String = basic.shape.Basic.getId) extends Basic  {
 
   lazy val texture = createBlockTexture("data/cuboid.jpg")
   lazy val genModel = makeBox(texture, radius/2 )

@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.bullet.Bullet
 import com.badlogic.gdx.physics.bullet.collision._
 import org.bjason.gamelogic.Log._
 import org.bjason.gamelogic.basic.move
-import org.bjason.gamelogic.basic.shape.{AlienGround, Basic, BulletShape, CollideShape, FuelBase, MyContactListener, PlayerSprite, Terrain}
+import org.bjason.gamelogic.basic.shape.{AlienGround, AlienMissileShape, Basic, BulletShape, CollideShape, FuelBase, MyContactListener, PlayerSprite, Terrain}
 import org.bjason.socket.{GameMessage, State, Websocket}
 import org.bjason.{gamelogic, socket}
 
@@ -27,6 +27,7 @@ object Controller {
     ("data/landscape.jpg", classOf[Texture]),
     ("data/cuboid.jpg", classOf[Pixmap]),
     ("data/aliencube.jpg", classOf[Pixmap]),
+    ("data/fuelbase.png", classOf[Texture]),
     ("data/surface.png", classOf[Texture]),
     ("data/explosion.jpg", classOf[Pixmap]),
     ("data/sky.png", classOf[Pixmap]),
@@ -105,8 +106,8 @@ object Controller {
       }
     }
 
-    val spaceBetweenFueld=100
-    val MAX_BASES=16
+    val spaceBetweenFueld=25
+    val MAX_BASES=32
     val baseStart = MAX_BASES/2/2/2
     for( fz <- -baseStart to baseStart ) {
       for ( fx <- -baseStart to baseStart ) {
@@ -241,6 +242,8 @@ object Controller {
     shadowBatch.begin(shadowLight.getCamera());
     shadowBatch.render(player.instance)
 
+
+    objects.filter( _.isInstanceOf[AlienMissileShape]).map( o => shadowBatch.render(o.instance))
     if (doTerrain) drawShadowTerrain
 
     shadowBatch.end();

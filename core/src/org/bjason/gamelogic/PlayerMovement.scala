@@ -7,7 +7,7 @@ import org.bjason.gamelogic
 import org.bjason.gamelogic.Log.info
 import org.bjason.gamelogic.basic.move.{MissileMovement, Movement}
 import org.bjason.gamelogic.basic.shape
-import org.bjason.gamelogic.basic.shape.PlayerSprite
+import org.bjason.gamelogic.basic.shape.{AlienMissileShape, PlayerSprite}
 import org.bjason.socket.{GameMessage, Websocket}
 
 object PlayerMovement  extends InputAdapter with Movement {
@@ -82,12 +82,12 @@ object PlayerMovement  extends InputAdapter with Movement {
 
   override def collision(me: shape.Basic, other:shape.Basic) {
 
-    GameInformation.playerHit()
-    gamelogic.Sound.playHit
     other match {
-      case b:MinionInvader => // gamelogic.Controller.addToDead(other)
+      case _:MinionInvader | _:AlienMissileShape => // gamelogic.Controller.addToDead(other)
         GameInformation.addScore(1)
         Websocket.broadcastMessage( GameMessage(msg = "Explosion",objMatrix4 =  me.instance.transform))
+        GameInformation.playerHit()
+        gamelogic.Sound.playHit
       case _ =>
         me.rollback
     }
