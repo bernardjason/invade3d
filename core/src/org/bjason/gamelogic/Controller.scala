@@ -26,6 +26,7 @@ object Controller {
     ("data/basic.jpg", classOf[Texture]),
     ("data/landscape.jpg", classOf[Texture]),
     ("data/cuboid.jpg", classOf[Pixmap]),
+    ("data/alienmissile.jpg", classOf[Texture]),
     ("data/aliencube.jpg", classOf[Pixmap]),
     ("data/fuelbase.png", classOf[Texture]),
     ("data/surface.png", classOf[Texture]),
@@ -111,7 +112,7 @@ object Controller {
     val baseStart = MAX_BASES/2/2/2
     for( fz <- -baseStart to baseStart ) {
       for ( fx <- -baseStart to baseStart ) {
-        val fuelBase = new FuelBase(startPosition =  new Vector3(fx * spaceBetweenFueld,0,fz * spaceBetweenFueld))
+        val fuelBase = new FuelBase(id=s"C_${fz}_${fx}",startPosition =  new Vector3(fx * spaceBetweenFueld,0,fz * spaceBetweenFueld))
         objects += fuelBase
       }
     }
@@ -129,15 +130,21 @@ object Controller {
 
     socket.Websocket.connect(socket.Websocket.Login(gamelogic.GameSetup.playerPrefix.toString, "" + gamelogic.GameSetup._playerId, gamelogic.GameSetup.gameName))
 
-    socket.Websocket.jsonobjects += player.jsonObject.get
-    socket.Websocket.jsonobjects += master.jsonObject.get
+    //socket.Websocket.jsonobjects += player.jsonObject.get
+    //socket.Websocket.jsonobjects += master.jsonObject.get
+    for(o <- objects ) {
+      o.jsonObject.map{ j =>
+        socket.Websocket.jsonobjects += j
+
+      }
+    }
 
     GameInformation.setAliens(100)
   }
 
   val fps = new FPSLogger()
   var ticker = 0
-  var skyAddX = 0
+  var skyAddX = 0f
 
   def render() {
 
@@ -167,21 +174,19 @@ object Controller {
     cam.position.y = player.position.y + 50
     cam.update()
 
-    skyAddX = ( q.getYaw * 15).toInt
+    skyAddX = skyAddX + PlayerMovement.dir*20
     val forSkyY = player.position.y
     val forSkyX = skyAddX
     spriteBatch.begin()
 
     for (skyY <- (forSkyY % skyHeight).toInt - skyHeight*2 to (forSkyY % skyHeight).toInt + skyHeight by skyHeight) {
-      for (skyX <- (forSkyX % skyWidth) - skyWidth to (forSkyX % skyWidth) + skyWidth * 4 by skyWidth) {
+      for (skyX <- (forSkyX % skyWidth) - skyWidth to (forSkyX % skyWidth) + skyWidth * 2 by skyWidth) {
         spriteBatch.draw(skyTexture, skyX, skyHeight - skyY)
       }
     }
     spriteBatch.end()
 
-
     if (doTerrain) addSurroundingTerrains
-
 
     for (o <- objects) {
       o.move(objects.toList)

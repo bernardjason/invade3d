@@ -1,24 +1,57 @@
 package org.bjason.gamelogic.basic.shape
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute
-import com.badlogic.gdx.graphics.g3d.{Material, Model}
-import com.badlogic.gdx.graphics.{GL20, Pixmap, Texture, VertexAttributes}
+import com.badlogic.gdx.graphics.g3d.{Environment, Material, Model, ModelBatch, ModelInstance}
+import com.badlogic.gdx.graphics.{Camera, GL20, Pixmap, Texture, VertexAttributes}
 import com.badlogic.gdx.math.Vector3
 import org.bjason.gamelogic
-import org.bjason.gamelogic.basic
+import org.bjason.gamelogic.{Common, basic}
 import org.bjason.gamelogic.basic.move.Movement
 import org.bjason.socket.{JsonObject, State}
 
-case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radius: Float = 12, var movement: Movement, override val id:String = basic.shape.Basic.getId) extends Basic  {
+case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radius: Float = 8, var movement: Movement, override val id: String = basic.shape.Basic.getId) extends Basic {
 
-  lazy val texture = createBlockTexture("data/cuboid.jpg")
-  lazy val genModel = makeBox(texture, radius/2 )
-  val rollbackScale= 0f
+  lazy val texture = Common.assets.get("data/alienmissile.jpg", classOf[Texture])
+  lazy val genModel = makeRect(texture, radius / 3, radius * 0.75f)
+  lazy val instance2 = new ModelInstance(genModel);
+  lazy val instance3 = new ModelInstance(genModel);
 
-  lazy val shape: CollideShape = BulletCollideBox(radius,boundingBox,basicObj=this,fudge = new Vector3(0.7f, 0.7f, 0.7f))
+  val rollbackScale = 0f
+
+  lazy val shape: CollideShape = BulletCollideBox(radius, boundingBox, basicObj = this, fudge = new Vector3(0.7f, 1.25f, 0.7f))
 
   override lazy val jsonObject = Some(new JsonObject(this.getClass.getSimpleName, id, gamelogic.Common.CHANGED, Some(State.ALIVE), instance = instance.transform))
+
+
+  override def reset = {
+    super.reset
+    instance2.transform.set(originalMatrix4)
+    instance2.transform.trn(startPosition)
+    instance2.transform.getTranslation(position)
+    offsetTail
+  }
+
+  val JIGGLE = 7
+  val JIGGLE_OFF_BY = 12
+  var jiggle = -JIGGLE
+  var jiggleBy = 2
+  var startToDisplayTailAfter = 0.25f
+
+  def offsetTail = {
+    jiggle = jiggle + jiggleBy
+    if (jiggle <= -JIGGLE || jiggle >= JIGGLE) {
+      jiggleBy = jiggleBy * -1
+    }
+    instance2.transform.setToTranslation(position)
+    instance2.transform.rotate(1, 0, 0, jiggle)
+    instance2.transform.translate(0, JIGGLE_OFF_BY, 0)
+
+    instance3.transform.setToTranslation(position)
+    instance3.transform.rotate(1, 0, 0, -jiggle)
+    instance3.transform.translate(0, JIGGLE_OFF_BY * 2, 0)
+  }
 
   override def move(objects: List[Basic]) = {
     movement.move(objects, this)
@@ -26,11 +59,54 @@ case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radiu
 
   override def collision(other: Basic) {
 
-    movement.collision(this,other)
+    movement.collision(this, other)
+  }
+
+  override def _render(modelBatch: ModelBatch, environment: Environment, cam: Camera): Unit = {
+    if (display) {
+      offsetTail
+      startToDisplayTailAfter = startToDisplayTailAfter - Gdx.graphics.getDeltaTime
+      if (shape.isVisible(instance.transform, cam)) {
+        modelBatch.render(instance, environment)
+        if (startToDisplayTailAfter <= 0) {
+          modelBatch.render(instance2, environment)
+          modelBatch.render(instance3, environment)
+        }
+      }
+    }
   }
 
   def dispose() {
     genModel.dispose();
+  }
+
+
+  def makeRect(texture: Texture, size: Float = 2f, height: Float = 4f): Model = {
+    val attr = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates;
+
+    val textureBlockWidth = texture.getWidth
+    val textureBlockHeight = texture.getHeight
+
+    modelBuilder.begin();
+
+    val mesh = modelBuilder.part("rect", GL20.GL_TRIANGLES, attr, new Material(TextureAttribute.createDiffuse(texture)));
+
+    val textureregion = Array(
+      new TextureRegion(texture, 0, 0, textureBlockWidth, textureBlockHeight))
+    mesh.setUVRange(textureregion(0));
+    mesh.rect(-size, -height, -size, -size, height, -size, size, height, -size, size, -height, -size, 0, 0, -1);
+    mesh.setUVRange(textureregion(0));
+    mesh.rect(-size, height, size, -size, -height, size, size, -height, size, size, height, size, 0, 0, 1);
+    mesh.setUVRange(textureregion(0));
+    mesh.rect(-size, -height, size, -size, -height, -size, size, -height, -size, size, -height, size, 0, -1, 0);
+    mesh.setUVRange(textureregion(0));
+    mesh.rect(-size, height, -size, -size, height, size, size, height, size, size, height, -size, 0, 1, 0);
+    mesh.setUVRange(textureregion(0));
+    mesh.rect(-size, -height, size, -size, height, size, -size, height, -size, -size, -height, -size, -1, 0, 0);
+    mesh.setUVRange(textureregion(0));
+    mesh.rect(size, -height, -size, size, height, -size, size, height, size, size, -height, size, 1, 0, 0);
+
+    modelBuilder.end();
   }
 
 
@@ -67,27 +143,4 @@ case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radiu
     modelBuilder.end();
   }
 
-  /**
-    * creates a texture for use in this class that has had the list of regions rotated to match expectation.
-    *  imagine a jpg with a list of 6 areas, 1 2 3 4 5 6.    1,5 & 6 are okay, but the others are wrong way up.
-    * @param textureName which is expected to be a loaded asset
-    * @return
-    */
-  def createBlockTexture(textureName: String) = {
-    val pixmap = gamelogic.Common.assets.get(textureName, classOf[Pixmap])
-
-    val textureBlockWidth = pixmap.getWidth / 6
-    val textureBlockHeight = pixmap.getHeight
-
-    val texture = new Texture(pixmap.getWidth, pixmap.getHeight, pixmap.getFormat)
-
-    val rototeAngle = Array(0, 180, 0, 0, 0, 0)
-    for (i <- 0 to 5) {
-      val pixmapX = i * textureBlockWidth
-      val rotated = gamelogic.Common.rotate(pixmap, rototeAngle(i), pixmapX, 0, textureBlockWidth, textureBlockHeight)
-      texture.draw(rotated, pixmapX, 0)
-      rotated.dispose()
-    }
-    texture
-  }
 }

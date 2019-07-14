@@ -159,7 +159,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
     val targetList = Controller.objects.filter{
       o =>
         o match {
-          case o:FuelBase => true
+          case o:FuelBase => if ( o.beenHit > 0 ) true else false
           case o:PlayerSprite => true
           case _ =>false
         }

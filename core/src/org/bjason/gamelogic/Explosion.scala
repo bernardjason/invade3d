@@ -30,7 +30,7 @@ case class Explosion(startPosition: Vector3) extends move.Movement {
   override def collision(me: shape.Basic, other:shape.Basic) {
   }
 
-  val startSize=4f
+  val startSize=3f
   val max = 30
 
   case class Particle(override val startPosition: Vector3 = new Vector3, val move: Movement) extends

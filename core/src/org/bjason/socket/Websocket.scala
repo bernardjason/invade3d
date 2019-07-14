@@ -211,7 +211,7 @@ object Websocket {
         gamelogic.GameInformation.end = true
       } else if (m.msg.startsWith(SCORE)) {
         gamelogic.GameInformation.gotScore(m)
-      } else if (m.msg.startsWith("Explosion") && m.objId != gamelogic.GameSetup.playerPrefix.toString ) {
+      } else if (m.msg.startsWith("Explosion") && m.objId != gamelogic.GameSetup.playerPrefix.toString && m.objMatrix4 != null ) {
         val position = new Vector3
         m.objMatrix4.getTranslation(position)
         gamelogic.Explosion(position)

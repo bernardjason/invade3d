@@ -47,8 +47,7 @@ case class AlienMissileMovement(direction: Vector3, val speed: Float = 50f) exte
         Websocket.broadcastMessage(GameMessage(msg = "Explosion", objMatrix4 = me.instance.transform))
         gamelogic.Explosion(me.position)
         gamelogic.Controller.addToDead(objectToControl)
-      case b: MinionInvader => //gamelogic.Controller.addToDead(other)
-      case b: MasterInvader => //gamelogic.Controller.addToDead(other)
+        b.jsonObject.get.dead
       case b: MinionInvader => //gamelogic.Controller.addToDead(other)
       case b: MasterInvader => //gamelogic.Controller.addToDead(other)
       case _ =>

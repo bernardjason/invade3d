@@ -30,7 +30,7 @@ abstract class Basic extends MessageReceiver {
       if (shape.isVisible(instance.transform, cam)){
         modelBatch.render(instance, environment)
       }
-    };
+    }
   }
   def _rotate( axisX:Float, axisY:Float, axisZ:Float, degrees:Float) = {
     instance.transform.rotate(axisX,axisY,axisZ,degrees)

@@ -9,34 +9,41 @@ import org.bjason.gamelogic.basic.move.{LandedInvaderRise, NoMovement}
 import org.bjason.socket.{GameMessage, JsonObject, State, Websocket}
 
 class FuelBase(textureName: String = "data/fuelbase.png", startPosition: Vector3 = new Vector3, dimensions: Vector3 = new Vector3(8, 5, 8),
-               radius: Float = 10f, override val id:String = Basic.getId)
+               radius: Float = 10f , override val id:String = Basic.getId)
   extends Cuboid(textureName = textureName, startPosition = startPosition, dimensions = dimensions, radius = radius,
     movement = NoMovement) {
 
-    startPosition.y = -dimensions.y+5
+  //override val id: String = s"C_${startPosition.x.toInt}_${startPosition.z.toInt}" //Basic.getId)
 
-    var beenHit=1
+  startPosition.y = -dimensions.y + 5
 
-  override lazy val shape: CollideShape = BulletCollideBox(radius,boundingBox,basicObj=this,fudge = new Vector3(0.5f, 0.5f, 0.5f))
+  var beenHit = 1
 
-    override lazy val jsonObject = Some(new JsonObject(this.getClass.getSimpleName, id, gamelogic.Common.CHANGED, Some(State.ALIVE), instance = instance.transform))
+  override lazy val shape: CollideShape = BulletCollideBox(radius, boundingBox, basicObj = this, fudge = new Vector3(0.5f, 0.5f, 0.5f))
 
-    override def collision(other:Basic) {
-        if ( other.isInstanceOf[AlienMissileShape]) {
-           beenHit=beenHit-1
-            if ( beenHit <= 0 ) {
-              Controller.addToDead(this)
-              Websocket.broadcastMessage( GameMessage(msg = "Explosion",objId = gamelogic.GameSetup.playerPrefix.toString,objMatrix4 =  instance.transform))
-              gamelogic.Explosion(position)
-            }
-        }
+  override lazy val jsonObject = Some(new JsonObject(this.getClass.getSimpleName, id, gamelogic.Common.UNCHANGED, Some(State.ALIVE), instance = instance.transform))
+
+  override def collision(other: Basic) {
+    if (other.isInstanceOf[AlienMissileShape]) {
+      beenHit = beenHit - 1
+      if (beenHit <= 0) {
+        Controller.addToDead(this)
+        //jsonObject.get.dead
+
+
+        //this.jsonObject.get.changed = Common.CHANGED
+        //this._translate(0,-100,0)
+        Websocket.broadcastMessage(GameMessage(msg = "Explosion", objId = gamelogic.GameSetup.playerPrefix.toString, objMatrix4 = instance.transform))
+        gamelogic.Explosion(position)
+      }
     }
+  }
 
-  override lazy val texture = Common.assets.get(textureName,classOf[Texture])
+  override lazy val texture = Common.assets.get(textureName, classOf[Texture])
 
 
   override def getTextureRegions(texture: Texture, textureBlockWidth: Int, textureBlockHeight: Int) = {
-    val wide=128
+    val wide = 128
     val textureregion = Array(
       new TextureRegion(texture, 0, 0, wide, wide),
       new TextureRegion(texture, 0, 0, wide, wide),

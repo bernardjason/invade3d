@@ -2,8 +2,8 @@ package org.bjason.gamelogic.basic.shape
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute
-import com.badlogic.gdx.graphics.g3d.{Material, Model}
-import com.badlogic.gdx.graphics.{GL20, Pixmap, Texture, VertexAttributes}
+import com.badlogic.gdx.graphics.g3d.{Environment, Material, Model, ModelBatch, ModelInstance}
+import com.badlogic.gdx.graphics.{Camera, GL20, Pixmap, Texture, VertexAttributes}
 import com.badlogic.gdx.math.Vector3
 import org.bjason.gamelogic
 import org.bjason.gamelogic.basic

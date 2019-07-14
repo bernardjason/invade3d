@@ -3,7 +3,7 @@ package org.bjason.socket
 import com.badlogic.gdx.math.{Matrix4, Vector3}
 import com.badlogic.gdx.utils.{Json, JsonValue}
 import org.bjason.gamelogic
-import org.bjason.gamelogic.{Log, MasterInvader}
+import org.bjason.gamelogic.{Common, Log, MasterInvader}
 import org.bjason.gamelogic.basic.move.NoMovement
 import org.bjason.gamelogic.basic.shape
 import org.bjason.gamelogic.basic.shape.Basic
@@ -23,8 +23,8 @@ case class JsonObject(
                        var id: String = null,
                        var changed: Int = 0,
                        var state: Option[State] = None,
-                       var age:Int = 0,
-                       var other:String = null,
+                       var age: Int = 0,
+                       var other: String = null,
                        var instance: Matrix4 = null
                      )
   extends Json.Serializable {
@@ -32,13 +32,14 @@ case class JsonObject(
   var whenDeadLinger = 2
 
   def this() {
-    this(null, null, 0, null, 0,null,null)
+    this(null, null, 0, null, 0, null, null)
   }
 
 
   def dead: Unit = {
     state = Some(State.DEAD)
-    Log.info("*** SET TO DEAD ", what, id, state)
+    changed = Common.CHANGED
+    Log.info(s"*** SET TO DEAD ${what}, ${id}, ${state}")
   }
 
 
@@ -50,8 +51,8 @@ case class JsonObject(
     json.writeValue("age", age)
     json.writeValue("other", other)
     json.writeValue("instance", instance)
-    changed = changed -1 ;
-    if ( changed < 0 ) changed = gamelogic.Common.UNCHANGED
+    changed = changed - 1;
+    if (changed < 0) changed = gamelogic.Common.UNCHANGED
 
   }
 
@@ -68,30 +69,28 @@ case class JsonObject(
   def toObject() = {
     //changed = Common.UNCHANGED
     var exists = false
-    if (id == "C_MASTER" || !id.startsWith("C") )  {
-      for (o <- gamelogic.Controller.objects) {
-        if (o.id == id) {
-          exists = true
-          if (state.get == State.DEAD) {
-            gamelogic.Controller.addToDead(o)
-            Log.info("REMOVE OBJECT ", this)
-          } else {
-            remoteUpdate(o)
-          }
+    for (o <- gamelogic.Controller.objects) {
+      if (o.id == id) {
+        exists = true
+        if (state.get == State.DEAD) {
+          gamelogic.Controller.addToDead(o)
+          Log.info("REMOVE OBJECT ", this)
+        } else {
+          remoteUpdate(o)
         }
       }
-    } else {
-      exists=doTerrainObject(exists)
-    } // end else
+    }
 
 
     if (!exists && state.get != State.DEAD) {
 
-      Log.info(s"${gamelogic.GameSetup.playerPrefix} ID is ${id} ${this.what},${this.id},${this.state}")
+      Log.info(s"${gamelogic.GameSetup.playerPrefix} ID is ${id} ${this.what},${this.id},${this.state} exists=${exists}")
+      //gamelogic.Controller.objects.map{ x => println(x.id)}
       val r = what match {
         case "PlayerSprite" => Some(shape.PlayerSprite(new Vector3(), movement = NoMovement, id = id))
         case "MissileShape" => Some(shape.MissileShape(new Vector3(), movement = NoMovement, id = id))
-        case "MasterInvader" => Some(new MasterInvader(new Vector3(), id = id , remoteMaster = true))
+        case "AlienMissileShape" => Some(shape.AlienMissileShape(new Vector3(), movement = NoMovement, id = id))
+        case "MasterInvader" => Some(new MasterInvader(new Vector3(), id = id, remoteMaster = true))
         // dont think needed case "EightBitInvader" => Some(new EightBitInvader(startPosition = new Vector3(),  id = id))
         case _ => None
 
@@ -116,8 +115,8 @@ case class JsonObject(
     o.animate
   }
 
-  def doTerrainObject(exist:Boolean) = {
-    var exists=exist
+  def doTerrainObject(exist: Boolean) = {
+    var exists = exist
     for (t1 <- gamelogic.Controller.terrains.values) {
       t1.objects.map(o =>
         if (o.id == id) {
