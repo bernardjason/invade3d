@@ -72,6 +72,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
   val minionStatus = Array.fill[MinionStatusValue](yyy, zzz, xxx)(MinionStatusValue(ALIVE))
 
   if (minionsEnabled && remoteMaster == false) createMinions
+  Sound.level(startPosition.y.toInt)
 
   private def createMinions = {
     for (yi <- 0 until yyy) {
@@ -247,7 +248,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
       oldx = x
       oldz = z
       y = -1
-      Sound.nextLevel
+      Sound.level(position.y.toInt)
     }
   }
 
@@ -261,12 +262,14 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
     }
     var random=Math.random() * 1000 % 10
 
+    var aliveMinons=0
     for (yi <- yyy-1 to 0 by -1) {
       for (zi <- 0 until zzz) {
         for (xi <- 0 until xxx) {
           val minion = minions(yi)(zi)(xi)
           var bit = BigInt(0)
           if (minion.minionStatus.isAlive) {
+            aliveMinons=aliveMinons+1
             bit = 1
             val pos = minion.position.set(position)
             setOffsetMinionPosition(yi, zi, xi, pos)
@@ -286,6 +289,10 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
           bitPosition = bitPosition + 1
         }
       }
+    }
+    if ( aliveMinons == 0 ) {
+      GameInformation.setGameOver
+      Websocket.broadcastMessage("GAME_OVER")
     }
 
     //Websocket.sendMessage(GameMessage(id = MASTER, msg = "hello"))

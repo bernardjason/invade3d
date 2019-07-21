@@ -1,8 +1,10 @@
 package org.bjason.gamelogic
 
 import java.io.IOException
+import java.util
 
 import com.badlogic.gdx.Input.Keys
+import com.badlogic.gdx.Net.{HttpRequest, HttpResponse, HttpResponseListener}
 import com.badlogic.gdx.graphics.{Color, GL20}
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type
 import com.badlogic.gdx.scenes.scene2d._
@@ -11,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.badlogic.gdx.scenes.scene2d.ui._
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
-import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.{Align, Json}
 import com.badlogic.gdx.{ApplicationAdapter, Gdx}
 import org.bjason.gamelogic
 import org.bjason.socket.Websocket
@@ -31,6 +33,7 @@ case class FirstScreen() extends ApplicationAdapter {
   var start: TextButton = null
   var mainGame: MainGame = null
   var launchState = 0
+  var players: util.ArrayList[String] = new util.ArrayList[String]()
 
   def handleDefaults = {
 
@@ -63,6 +66,9 @@ case class FirstScreen() extends ApplicationAdapter {
 
     handleDefaults
 
+    getPlayers
+
+
     Gdx.input.setInputProcessor(stage)
     val table = new Table
 
@@ -90,12 +96,11 @@ case class FirstScreen() extends ApplicationAdapter {
     val style = new LabelStyle(default, Color.WHITE)
 
     textTable.add(new Label("(3 letters only) player id", style)).align((Align.right)).pad(padding)
-    //val playerIdWidget = if (playerId > 0) new TextField("" + playerId, skin) else new TextField("", skin)
     val playerIdWidget = new TextField("" + playerId, skin)
     playerIdWidget.setTextFieldFilter(new TextFieldFilter {
       override def acceptChar(textField: TextField, c: Char): Boolean = {
-        if ( textField.getText.size >= 3 ) return false
-        if (c >= 'A' && c <= 'z' || c == '.' || c == '@' ) true
+        if (textField.getText.size >= 3) return false
+        if (c >= 'A' && c <= 'z' || c == '.' || c == '@') true
         else false
       }
     })
@@ -156,20 +161,28 @@ case class FirstScreen() extends ApplicationAdapter {
       gameName = null
       playerIdWidget.setColor(Color.BLACK)
       gameIdWidget.setColor(Color.BLACK)
-      if ( playerIdWidget.getText.trim.length == 0 ) {
+      if (playerIdWidget.getText.trim.length == 0) {
         playerIdWidget.setColor(Color.RED)
         playerIdWidget.setMessageText("size > 0 < 3")
+        showMsg("size > 0 < 3")
       } else {
-        playerId  = playerIdWidget.getText.trim
+        playerId = playerIdWidget.getText.trim
       }
-      if ( gameIdWidget.getText.trim.length > 0 ) {
+      if (gameIdWidget.getText.trim.length > 0) {
         gameName = gameIdWidget.getText.trim
       } else {
         gameIdWidget.setColor(Color.RED)
         gameIdWidget.setMessageText("name pls")
+        showMsg("name please")
+      }
+      if (players.contains(playerId)) {
+        playerIdWidget.setColor(Color.RED)
+        playerIdWidget.setMessageText("name taken")
+        showMsg(s"name taken\ncurrent list\n${players}")
+        playerId = null
       }
 
-      if ( playerId != null && gameName != null ) {
+      if (playerId != null && gameName != null) {
         val bar = new ProgressBar(0, 10, 1, false, skin)
 
         val window = new Window("Loading...", skin)
@@ -239,6 +252,18 @@ case class FirstScreen() extends ApplicationAdapter {
     )
   }
 
+  def showMsg(msg: String): Unit = {
+    val dialog = new Dialog("Warning", skin) {
+      override def result(obj: Any): Unit = {
+        System.out.println("result " + obj)
+      }
+    }
+    dialog.text(msg)
+    dialog.button("OK")
+
+    dialog.show(stage)
+  }
+
   override def resize(width: Int, height: Int): Unit = {
     stage.getViewport.update(width, height, true)
   }
@@ -257,6 +282,24 @@ case class FirstScreen() extends ApplicationAdapter {
       case _ =>
     }
   }
+
+
+  def getPlayers = {
+    val httpGet = new HttpRequest("GET");
+    httpGet.setUrl(s"${Websocket.TESTPROTOCOL}://${Websocket.URL}/players");
+    Gdx.net.sendHttpRequest(httpGet, new HttpResponseListener() {
+      override def handleHttpResponse(response: HttpResponse) {
+        val result = response.getResultAsString();
+        val json = new Json()
+        players = json.fromJson(classOf[util.ArrayList[String]], result)
+      }
+
+      override def failed(t: Throwable) {}
+
+      override def cancelled(): Unit = {}
+    });
+  }
+
 
   override def dispose(): Unit = {
     stage.dispose

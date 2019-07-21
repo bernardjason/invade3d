@@ -92,8 +92,13 @@ object PlayerMovement extends InputAdapter with Movement {
   override def collision(me: shape.Basic, other: shape.Basic) {
 
     other match {
-      case _: MinionInvader | _: AlienMissileShape => // gamelogic.Controller.addToDead(other)
+      case _: MinionInvader  =>
         GameInformation.addScore(1)
+        Websocket.broadcastMessage(GameMessage(msg = "Explosion", objMatrix4 = me.instance.transform))
+        GameInformation.playerHit()
+        gamelogic.Sound.playHit
+      case  _: AlienMissileShape =>
+        GameInformation.addScore(10)
         Websocket.broadcastMessage(GameMessage(msg = "Explosion", objMatrix4 = me.instance.transform))
         GameInformation.playerHit()
         gamelogic.Sound.playHit

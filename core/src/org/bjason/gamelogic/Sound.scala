@@ -18,6 +18,7 @@ object Sound {
   }
   var levelSound=0
 
+  /*
   def nextLevel = {
     allBackgrounds.map{ s =>
       s.setLooping(true)
@@ -27,6 +28,23 @@ object Sound {
     levelSound=levelSound+1
     if ( levelSound >= allBackgrounds.length ) levelSound = allBackgrounds.length-1
   }
+   */
+  def allStop = {
+    alienMissileSound.stop()
+  }
+
+  def level(level:Int): Unit = {
+    this.levelSound = level/200
+  }
+  private var countDown = 0f
+  def invading = {
+    if ( countDown <= 0 ) {
+      background3.play()
+      countDown = levelSound
+    }
+    countDown = countDown - Gdx.graphics.getDeltaTime
+  }
+
 
   def playFire  {
     fire.play()

@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3
 import org.bjason.gamelogic
 import org.bjason.gamelogic.basic.move.{Movement, NoMovement}
 import org.bjason.gamelogic.basic.shape.{AlienMissileShape, Basic, BulletCollideBox, CollideShape, FuelBase, MissileShape, PlayerSprite}
+import org.bjason.socket.Websocket
 
 class MinionInvader(val minionStatus: MinionStatusValue, val startPosition: Vector3, val radius: Float = 16f) extends Basic {
 
@@ -41,6 +42,7 @@ class MinionInvader(val minionStatus: MinionStatusValue, val startPosition: Vect
         minionStatus.dead
       case _ =>
         GameInformation.setGameOver
+        Websocket.broadcastMessage("GAME_OVER")
         //gamelogic.Controller.addToDead(other)
         //other.jsonObject.get.dead
     }

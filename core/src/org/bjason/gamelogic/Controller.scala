@@ -110,15 +110,12 @@ object Controller {
     val spaceBetweenFueld=25
     val MAX_BASES=32
     val baseStart = MAX_BASES/2/2/2
-    var totalBases= 0
     for( fz <- -baseStart to baseStart ) {
       for ( fx <- -baseStart to baseStart ) {
         val fuelBase = new FuelBase(id=s"C_${fz}_${fx}",startPosition =  new Vector3(fx * spaceBetweenFueld,0,fz * spaceBetweenFueld))
         objects += fuelBase
-        totalBases=totalBases+1
       }
     }
-    GameInformation.setAliens(totalBases)
 
     if (doTerrain) {
       for (t <- terrains.values) {
@@ -149,6 +146,7 @@ object Controller {
 
   def render() {
 
+    Sound.invading
     Websocket.clearDeletedObjects
     socket.Websocket.sayHello
     socket.Websocket.writeAllMyObjects()

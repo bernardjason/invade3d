@@ -55,7 +55,6 @@ class FuelBase(textureName: String = "data/fuelbase.png", startPosition: Vector3
   }
 
   override def onDead: Option[Basic] = {
-    GameInformation.removeAlien
     super.onDead
   }
 }
