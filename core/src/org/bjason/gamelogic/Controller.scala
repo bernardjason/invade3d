@@ -77,7 +77,7 @@ object Controller {
   }
 
   val terrains = scala.collection.mutable.Map[String, Terrain]()
-  val master = new MasterInvader(startPosition =  new Vector3(0,200,0))
+  val master = new MasterInvader(startPosition =  new Vector3(0,300,0))
   var lastPitUsed = 0
   val doTerrain = false
 
@@ -110,12 +110,15 @@ object Controller {
     val spaceBetweenFueld=25
     val MAX_BASES=32
     val baseStart = MAX_BASES/2/2/2
+    var totalBases= 0
     for( fz <- -baseStart to baseStart ) {
       for ( fx <- -baseStart to baseStart ) {
         val fuelBase = new FuelBase(id=s"C_${fz}_${fx}",startPosition =  new Vector3(fx * spaceBetweenFueld,0,fz * spaceBetweenFueld))
         objects += fuelBase
+        totalBases=totalBases+1
       }
     }
+    GameInformation.setAliens(totalBases)
 
     if (doTerrain) {
       for (t <- terrains.values) {
@@ -130,16 +133,14 @@ object Controller {
 
     socket.Websocket.connect(socket.Websocket.Login(gamelogic.GameSetup.playerPrefix.toString, "" + gamelogic.GameSetup._playerId, gamelogic.GameSetup.gameName))
 
-    //socket.Websocket.jsonobjects += player.jsonObject.get
-    //socket.Websocket.jsonobjects += master.jsonObject.get
     for(o <- objects ) {
       o.jsonObject.map{ j =>
         socket.Websocket.jsonobjects += j
 
       }
     }
+    GameInformation.startGame
 
-    GameInformation.setAliens(100)
   }
 
   val fps = new FPSLogger()

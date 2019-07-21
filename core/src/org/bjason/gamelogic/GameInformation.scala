@@ -43,15 +43,26 @@ object GameInformation {
   private var aliens = 0;
   private var countDown = 180
   lazy val drawHeightY = Gdx.graphics.getHeight * 0.9f
+  private var time:Long = 0L
 
+  def startGame = {
+    time = System.currentTimeMillis()
+    Sound.nextLevel
+  }
   def setAliens(are: Int): Unit = {
     aliens = are
-    if (aliens <= 0) countDown = countDown - 1
+    if (aliens <= 0 ) end=true
+  }
+  def removeAlien ={
+    aliens=aliens -1
   }
 
   def isGameEnd = {
-    if ((aliens <= 0 && countDown <= 0) || end == true) true else false
+    //if ((aliens <= 0 && countDown <= 0) || end == true) true else false
+    if ( end ) countDown=countDown -1
+    if (countDown <= 0) true else false
   }
+  def setGameOver = { end=true}
 
   def playerHit(): Unit = {
     playerHits = playerHits + 1
@@ -65,7 +76,11 @@ object GameInformation {
 
     font.setColor(Color.WHITE)
     font.draw(batch, s"Player hits ${playerHits} score ${score}  ${aliens}", 10, drawHeightY)
+
     var y = drawHeightY - 40
+    val elapsed = (System.currentTimeMillis()-time )/1000L
+    font.draw(batch, s"time $elapsed", 10, y)
+    y = y - 25
     for (m <- allScore) {
       font.setColor(Color.YELLOW)
       font.draw(batch, m._2, 10, y)

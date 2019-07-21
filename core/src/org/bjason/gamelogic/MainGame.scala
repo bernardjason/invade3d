@@ -2,6 +2,8 @@ package org.bjason.gamelogic
 
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.{ApplicationAdapter, Gdx, InputMultiplexer}
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Pixmap
 
 case class MainGame() extends ApplicationAdapter {
   val thiscontroller = Controller
@@ -9,11 +11,14 @@ case class MainGame() extends ApplicationAdapter {
 
   override def create() {
 
+    val pm = new Pixmap(1,1, Pixmap.Format.RGBA8888)
+
+    Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 0, 0))
+    pm.dispose()
+
     thiscontroller.create
 
     val multiplexer = new InputMultiplexer();
-    //multiplexer.addProcessor(Controller.camController);
-    // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx multiplexer.addProcessor(InputHandler);
     multiplexer.addProcessor(PlayerMovement);
 
     Gdx.input.setInputProcessor(multiplexer);

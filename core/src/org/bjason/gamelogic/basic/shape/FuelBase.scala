@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector3
 import org.bjason.gamelogic
-import org.bjason.gamelogic.{Common, Controller}
+import org.bjason.gamelogic.{Common, Controller, GameInformation, MinionInvader}
 import org.bjason.gamelogic.basic.move.{LandedInvaderRise, NoMovement}
 import org.bjason.socket.{GameMessage, JsonObject, State, Websocket}
 
@@ -24,18 +24,17 @@ class FuelBase(textureName: String = "data/fuelbase.png", startPosition: Vector3
   override lazy val jsonObject = Some(new JsonObject(this.getClass.getSimpleName, id, gamelogic.Common.UNCHANGED, Some(State.ALIVE), instance = instance.transform))
 
   override def collision(other: Basic) {
-    if (other.isInstanceOf[AlienMissileShape]) {
-      beenHit = beenHit - 1
-      if (beenHit <= 0) {
-        Controller.addToDead(this)
-        //jsonObject.get.dead
-
-
-        //this.jsonObject.get.changed = Common.CHANGED
-        //this._translate(0,-100,0)
-        Websocket.broadcastMessage(GameMessage(msg = "Explosion", objId = gamelogic.GameSetup.playerPrefix.toString, objMatrix4 = instance.transform))
-        gamelogic.Explosion(position)
-      }
+    println("BERNARD1 ",other)
+    other match {
+      case _:AlienMissileShape|_:MinionInvader =>
+        println("************************* BERNARD1 ",other)
+        beenHit = beenHit - 1
+        if (beenHit <= 0) {
+          Controller.addToDead(this)
+          Websocket.broadcastMessage(GameMessage(msg = "Explosion", objId = gamelogic.GameSetup.playerPrefix.toString, objMatrix4 = instance.transform))
+          gamelogic.Explosion(position)
+        }
+      case _ =>
     }
   }
 
@@ -53,5 +52,10 @@ class FuelBase(textureName: String = "data/fuelbase.png", startPosition: Vector3
       new TextureRegion(texture, 0, 0, wide, wide)
     )
     textureregion
+  }
+
+  override def onDead: Option[Basic] = {
+    GameInformation.removeAlien
+    super.onDead
   }
 }

@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 
 object GameSetup {
 
-  var _playerId:Int = -1
+  var _playerId = "-1"
   var _gameName:String = ""
 
   val GAME="Invade 3D"

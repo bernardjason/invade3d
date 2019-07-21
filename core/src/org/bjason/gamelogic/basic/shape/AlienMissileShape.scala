@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g3d.{Environment, Material, Model, ModelBatch, 
 import com.badlogic.gdx.graphics.{Camera, GL20, Pixmap, Texture, VertexAttributes}
 import com.badlogic.gdx.math.Vector3
 import org.bjason.gamelogic
-import org.bjason.gamelogic.{Common, basic}
+import org.bjason.gamelogic.{Common, MinionInvader, Sound, basic}
 import org.bjason.gamelogic.basic.move.Movement
 import org.bjason.socket.{JsonObject, State}
 
@@ -24,6 +24,7 @@ case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radiu
 
   override lazy val jsonObject = Some(new JsonObject(this.getClass.getSimpleName, id, gamelogic.Common.CHANGED, Some(State.ALIVE), instance = instance.transform))
 
+  Sound.alienMissile
 
   override def reset = {
     super.reset
@@ -60,6 +61,10 @@ case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radiu
   override def collision(other: Basic) {
 
     movement.collision(this, other)
+    other match {
+      case _:MinionInvader =>
+      case _ => Sound.soptAlienMissileShape
+    }
   }
 
   override def _render(modelBatch: ModelBatch, environment: Environment, cam: Camera): Unit = {

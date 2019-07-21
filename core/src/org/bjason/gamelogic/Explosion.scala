@@ -13,11 +13,11 @@ case class Explosion(startPosition: Vector3) extends move.Movement {
 
   override def move(objects: List[shape.Basic], me: shape.Basic) {
 
-    val p =me.asInstanceOf[Particle]
+    val p = me.asInstanceOf[Particle]
     val translation = p.direction.cpy.scl(p.speed)
     p.speed = p.speed * 0.98f
 
-    p.instance.transform.rotate(Math.random().toFloat,Math.random().toFloat,Math.random().toFloat,10)
+    p.instance.transform.rotate(Math.random().toFloat, Math.random().toFloat, Math.random().toFloat, 10)
     p._trn(translation)
     p.ttl = p.ttl - Gdx.graphics.getDeltaTime
     if (p.ttl < 0) {
@@ -27,18 +27,18 @@ case class Explosion(startPosition: Vector3) extends move.Movement {
 
   }
 
-  override def collision(me: shape.Basic, other:shape.Basic) {
+  override def collision(me: shape.Basic, other: shape.Basic) {
   }
 
-  val startSize=3f
+  val startSize = 3f
   val max = 30
 
-  case class Particle(override val startPosition: Vector3 = new Vector3, val move: Movement) extends
+  case class Particle(override val startPosition: Vector3 = new Vector3, val move: Movement, startSize: Float = startSize) extends
     shape.Cuboid(textureName = "data/explosion.jpg", startPosition = startPosition, dimensions = new Vector3(startSize, startSize, startSize), radius = 138f, movement = move) {
 
-    val direction = new Vector3(Math.random().toFloat-0.5f, Math.random().toFloat-0.5f, Math.random().toFloat-0.5f)
+    val direction = new Vector3(Math.random().toFloat - 0.5f, Math.random().toFloat - 0.5f, Math.random().toFloat - 0.5f)
 
-    var speed = 3+(Math.random()*1000).toFloat % 3
+    var speed = 3 + (Math.random() * 1000).toFloat % 3
     var ttl = 1f
     override lazy val shape = new CollideShape {
       val radius = 0f
@@ -46,8 +46,16 @@ case class Explosion(startPosition: Vector3) extends move.Movement {
       override def intersects(transform: Matrix4, ray: Ray): Float = {
         Float.MaxValue
       }
+
       def isVisible(transform: Matrix4, cam: Camera): Boolean = true
     }
+  }
+
+  for (particles <- 0 to 4) {
+    val p = new Particle(startPosition = startPosition, move = this, startSize = 8) {
+      ttl = 0.125f
+    }
+    Controller.addNewBasic(p)
   }
 
   for (particles <- 0 to max) {

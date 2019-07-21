@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.{Color, GL20}
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type
 import com.badlogic.gdx.scenes.scene2d._
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.badlogic.gdx.scenes.scene2d.ui._
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
@@ -25,7 +26,7 @@ case class FirstScreen() extends ApplicationAdapter {
 
   lazy val skin = new Skin(Gdx.files.internal("data/uiskin.json"))
 
-  var playerId = -1
+  var playerId = "-1"
   var gameName = ""
   var start: TextButton = null
   var mainGame: MainGame = null
@@ -38,7 +39,7 @@ case class FirstScreen() extends ApplicationAdapter {
     if (playerIdFile.exists()) {
       val contents = playerIdFile.readString().trim
       try {
-        playerId = contents.toInt
+        playerId = contents
       } catch {
         case _: Throwable =>
       }
@@ -88,9 +89,16 @@ case class FirstScreen() extends ApplicationAdapter {
 
     val style = new LabelStyle(default, Color.WHITE)
 
-    textTable.add(new Label("(Digits only) player id", style)).align((Align.right)).pad(padding)
-    val playerIdWidget = if (playerId > 0) new TextField("" + playerId, skin) else new TextField("", skin)
-    playerIdWidget.setTextFieldFilter(new DigitsOnlyFilter)
+    textTable.add(new Label("(3 letters only) player id", style)).align((Align.right)).pad(padding)
+    //val playerIdWidget = if (playerId > 0) new TextField("" + playerId, skin) else new TextField("", skin)
+    val playerIdWidget = new TextField("" + playerId, skin)
+    playerIdWidget.setTextFieldFilter(new TextFieldFilter {
+      override def acceptChar(textField: TextField, c: Char): Boolean = {
+        if ( textField.getText.size >= 3 ) return false
+        if (c >= 'A' && c <= 'z' || c == '.' || c == '@' ) true
+        else false
+      }
+    })
     textTable.add(playerIdWidget).align(Align.left)
     textTable.row()
 
@@ -144,16 +152,15 @@ case class FirstScreen() extends ApplicationAdapter {
     table.row().pad(0).space(0)
 
     def startGame = {
-      playerId = -1
+      playerId = null
       gameName = null
       playerIdWidget.setColor(Color.BLACK)
       gameIdWidget.setColor(Color.BLACK)
-      if (  playerIdWidget.getText.trim.matches("\\d\\d*") ) {
-        playerId = playerIdWidget.getText.trim.toInt
-      }
-      if ( playerId <= 0 ) {
+      if ( playerIdWidget.getText.trim.length == 0 ) {
         playerIdWidget.setColor(Color.RED)
-        playerIdWidget.setMessageText("Int > 0")
+        playerIdWidget.setMessageText("size > 0 < 3")
+      } else {
+        playerId  = playerIdWidget.getText.trim
       }
       if ( gameIdWidget.getText.trim.length > 0 ) {
         gameName = gameIdWidget.getText.trim
@@ -162,7 +169,7 @@ case class FirstScreen() extends ApplicationAdapter {
         gameIdWidget.setMessageText("name pls")
       }
 
-      if ( playerId > 0 && gameName != null ) {
+      if ( playerId != null && gameName != null ) {
         val bar = new ProgressBar(0, 10, 1, false, skin)
 
         val window = new Window("Loading...", skin)

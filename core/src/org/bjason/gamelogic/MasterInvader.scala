@@ -51,7 +51,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
   val move = new Vector3
   var allFourCorners = Array(-1, -1, 0, 0)
   var moveDown = 0f
-  val SPEED = 20
+  val SPEED = 60
   var oldx = 0
   var oldz = 0
   var ticker = 0f
@@ -247,6 +247,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
       oldx = x
       oldz = z
       y = -1
+      Sound.nextLevel
     }
   }
 
