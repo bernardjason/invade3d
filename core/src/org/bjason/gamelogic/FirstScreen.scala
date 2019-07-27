@@ -5,14 +5,15 @@ import java.util
 
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.Net.{HttpRequest, HttpResponse, HttpResponseListener}
-import com.badlogic.gdx.graphics.{Color, GL20}
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.{Color, GL20, Texture}
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type
 import com.badlogic.gdx.scenes.scene2d._
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.badlogic.gdx.scenes.scene2d.ui._
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.{ChangeListener, TextureRegionDrawable}
 import com.badlogic.gdx.utils.{Align, Json}
 import com.badlogic.gdx.{ApplicationAdapter, Gdx}
 import org.bjason.gamelogic
@@ -27,6 +28,7 @@ case class FirstScreen() extends ApplicationAdapter {
   lazy val stage = new Stage()
 
   lazy val skin = new Skin(Gdx.files.internal("data/uiskin.json"))
+  lazy val background = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("data/sky.png"))))
 
   var playerId = "-1"
   var gameName = ""
@@ -73,6 +75,7 @@ case class FirstScreen() extends ApplicationAdapter {
     val table = new Table
 
     table.setFillParent(true)
+    table.setBackground(background)
     table.setDebug(true)
     stage.addActor(table)
 
@@ -84,7 +87,6 @@ case class FirstScreen() extends ApplicationAdapter {
     table.setDebug(false) // This is optional, but enables debug lines for tables.
 
     val title = gamelogic.GameSetup.getTitle
-
     table.add(title).colspan(2).align(Align.center).padBottom(20)
     table.row()
     table.add(sep).colspan(2)
@@ -142,8 +144,6 @@ case class FirstScreen() extends ApplicationAdapter {
         }
       }
     })
-    serverAddr.setColor(Color.BLACK)
-    serverAddr.getLabel.setColor(Color.CYAN)
     serverAddr.getStyle.overFontColor = Color.BLUE
     serverAddr.pad(0)
 
@@ -190,7 +190,7 @@ case class FirstScreen() extends ApplicationAdapter {
         window.setPosition(Gdx.graphics.getWidth / 2 - 200, Gdx.graphics.getHeight / 2 - 200)
         val windowTable = new Table
         window.add(windowTable)
-        val doingWhat = new Label("Currently doing....", skin)
+        val doingWhat = new Label("loading\nnow ....", skin)
         windowTable.add(doingWhat)
         windowTable.row()
         windowTable.add(bar)

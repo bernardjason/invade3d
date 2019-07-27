@@ -10,7 +10,7 @@ import org.bjason.socket.Websocket
 class MinionInvader(val minionStatus: MinionStatusValue, val startPosition: Vector3, val radius: Float = 16f) extends Basic {
 
   override var movement: Movement = NoMovement
-  lazy val genModel = gamelogic.Common.assets.get("data/8_bit_space_ivader.g3db", classOf[Model])
+  lazy val genModel = gamelogic.Common.assets.get("data/alien.g3db", classOf[Model])
 
   val rollbackScale = -2f
   var onScreen = true

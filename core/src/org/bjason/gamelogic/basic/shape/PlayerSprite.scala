@@ -13,7 +13,7 @@ import org.bjason.socket.{JsonObject, State}
 
 case class PlayerSprite(val startPosition: Vector3 = new Vector3, val radius: Float = 8f, var movement: Movement, override val id: String = gamelogic.basic.shape.Basic.getId) extends Basic {
 
-  lazy val genModel = gamelogic.Common.assets.get("data/hero.g3db", classOf[Model])
+  lazy val genModel = gamelogic.Common.assets.get("data/invade.g3db", classOf[Model])
 
   val rollbackScale = -2f
 

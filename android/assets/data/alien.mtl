@@ -1,6 +1,6 @@
-# Material file for 8_bit_space_ivader.obj
+# Material file for alien.obj
 
-newmtl green
+newmtl alien
 	Ns 0
 	d 1
 	illum 2

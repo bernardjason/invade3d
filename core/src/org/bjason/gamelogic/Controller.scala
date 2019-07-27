@@ -32,8 +32,9 @@ object Controller {
     ("data/surface.png", classOf[Texture]),
     ("data/explosion.jpg", classOf[Pixmap]),
     ("data/sky.png", classOf[Pixmap]),
-    ("data/hero.g3db", classOf[Model]),
-    ("data/8_bit_space_ivader.g3db", classOf[Model])
+    ("data/invade.g3db", classOf[Model]),
+    ("data/alien.g3db", classOf[Model])
+    ,("data/8_bit_space_ivader.g3db", classOf[Model])
   )
 
 

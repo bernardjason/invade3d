@@ -92,9 +92,10 @@ object PlayerMovement extends InputAdapter with Movement {
   override def collision(me: shape.Basic, other: shape.Basic) {
 
     other match {
-      case _: MinionInvader  =>
+      case m: MinionInvader  =>
         GameInformation.addScore(1)
         Websocket.broadcastMessage(GameMessage(msg = "Explosion", objMatrix4 = me.instance.transform))
+        gamelogic.Explosion(m.position)
         GameInformation.playerHit()
         gamelogic.Sound.playHit
       case  _: AlienMissileShape =>

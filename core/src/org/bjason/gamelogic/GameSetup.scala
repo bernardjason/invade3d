@@ -72,6 +72,7 @@ object GameSetup {
         }
         this.actor.setX(xxx)
         this.actor.setY(yyy)
+        this.actor.setZIndex(100)
         xxx=xxx+xdirection
         if ( xxx <= 0 || xxx+ this.actor.getWidth >= Gdx.graphics.getWidth ) xdirection= xdirection * -1
         yyy=yyy+ydirection

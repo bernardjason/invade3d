@@ -32,7 +32,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
 
   lazy val shape: CollideShape = new NeverCollide
 
-  lazy val genModel = gamelogic.Common.assets.get("data/8_bit_space_ivader.g3db", classOf[Model])
+  lazy val genModel = gamelogic.Common.assets.get("data/alien.g3db", classOf[Model])
   val rollbackScale = -2f
   val className = this.getClass.getSimpleName
   lazy val jsonObjectInstance = new JsonObject(className, id, gamelogic.Common.UNCHANGED, Some(State.ALIVE), instance = instance.transform)
@@ -311,7 +311,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
   }
 
   override def _render(modelBatch: ModelBatch, environment: Environment, cam: Camera): Unit = {
-    super._render(modelBatch, environment, cam)
+    //super._render(modelBatch, environment, cam)
 
   }
 }

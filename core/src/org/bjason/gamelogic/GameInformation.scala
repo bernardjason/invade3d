@@ -73,9 +73,15 @@ object GameInformation {
   def drawText(batch: Batch): Unit = {
 
     font.setColor(Color.WHITE)
-    font.draw(batch, s"Player hits ${playerHits} score ${score}", 10, drawHeightY)
-
     var y = drawHeightY - 40
+    if (end) {
+      for (x <- 0 to Gdx.graphics.getWidth by 300) {
+        for (y <- drawHeightY to 0 by -40)
+          font.draw(batch, s"******  GAME OVER ******", x, y)
+      }
+    }
+    font.draw(batch, s"Player hits ${playerHits} score ${score}", 10, y)
+
     y = y - 25
     for (m <- allScore) {
       font.setColor(Color.YELLOW)
