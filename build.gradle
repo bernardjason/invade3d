@@ -46,10 +46,18 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
 }
+project(":android") {
+    task release(overwrite: true) {
+        //overwrite release task in the subprojects
+    }
+}
 
 project(":desktop") {
     apply plugin: "java"
 
+    task release(overwrite: true) {
+        //overwrite release task in the subprojects
+    }
 
     dependencies {
         compile project(":core")
@@ -68,6 +76,9 @@ project(":desktop") {
 project(":core") {
     apply plugin: "java"
 
+    task release(overwrite: true) {
+        //overwrite release task in the subprojects
+    }
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
