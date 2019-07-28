@@ -51,7 +51,7 @@ public class DesktopLauncher {
         config.width = 1024;
         config.height = 700;
 
-        //config.fullscreen = true;
+        config.fullscreen = true;
         GameProxy$ game = GameProxy$.MODULE$;
         game.setAdapter(new FirstScreen());
         LwjglApplication l = new LwjglApplication(game, config);
