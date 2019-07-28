@@ -28,7 +28,6 @@ allprojects {
     apply plugin: "idea"
     apply plugin: 'net.researchgate.release'
 
-    version = '1.0'
     ext {
         appName = "invade3d"
         gdxVersion = '1.9.8'
