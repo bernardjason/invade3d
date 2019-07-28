@@ -34,7 +34,6 @@ object Controller {
     ("data/sky.png", classOf[Pixmap]),
     ("data/invade.g3db", classOf[Model]),
     ("data/alien.g3db", classOf[Model])
-    ,("data/8_bit_space_ivader.g3db", classOf[Model])
   )
 
 
