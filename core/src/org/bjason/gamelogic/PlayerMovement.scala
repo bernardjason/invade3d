@@ -23,7 +23,7 @@ object PlayerMovement extends InputAdapter with Movement {
   private var fire = false
   val SENSITIVE = 2
   var timeSinceLastFire = 0L
-  val GAP_BETWEEN_FIRE = 200
+  val GAP_BETWEEN_FIRE = 1000
 
   var speed = 0f;
   val gravity = new Vector3(0, -0.25f, 0)
@@ -72,7 +72,7 @@ object PlayerMovement extends InputAdapter with Movement {
 
       val dir = new Vector3(0, 0, -1)
       val m = new MissileMovement(direction = dir)
-      val b = new shape.MissileShape(startHere, movement = m)
+      val b = new shape.MissileShape(startHere, missileMovement = Some(m))
 
       b._getTransform().set(q)
 

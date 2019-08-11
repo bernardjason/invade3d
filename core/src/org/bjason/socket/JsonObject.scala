@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.{Matrix4, Vector3}
 import com.badlogic.gdx.utils.{Json, JsonValue}
 import org.bjason.gamelogic
 import org.bjason.gamelogic.{Common, Log, MasterInvader}
-import org.bjason.gamelogic.basic.move.NoMovement
+import org.bjason.gamelogic.basic.move.{AlienMissileMovement, MissileMovement, NoMovement}
 import org.bjason.gamelogic.basic.shape
 import org.bjason.gamelogic.basic.shape.Basic
 import org.bjason.socket.State.State
@@ -88,8 +88,21 @@ case class JsonObject(
       //gamelogic.Controller.objects.map{ x => println(x.id)}
       val r = what match {
         case "PlayerSprite" => Some(shape.PlayerSprite(new Vector3(), movement = NoMovement, id = id))
-        case "MissileShape" => Some(shape.MissileShape(new Vector3(), movement = NoMovement, id = id))
-        case "AlienMissileShape" => Some(shape.AlienMissileShape(new Vector3(), movement = NoMovement, id = id))
+        case "MissileShape" =>
+          println(other)
+          val floats = other.split(",").toList.map(_.toFloat)
+          val direction = new Vector3(floats(0),floats(1),floats(2))
+          val missileMovement = new MissileMovement(direction)
+          val missile = shape.MissileShape(new Vector3(), missileMovement = Some(missileMovement), id = id)
+          missileMovement.objectToControl = missile
+          Some(missile)
+        case "AlienMissileShape" =>
+          val floats = other.split(",").toList.map(_.toFloat)
+          val direction = new Vector3(floats(0),floats(1),floats(2))
+          val missileMovement = new AlienMissileMovement(direction)
+          val alienMissile = shape.AlienMissileShape(new Vector3(), missileMovement = missileMovement, id = id)
+          missileMovement.objectToControl = alienMissile
+          Some(alienMissile)
         case "MasterInvader" => Some(new MasterInvader(new Vector3(), id = id, remoteMaster = true))
         // dont think needed case "EightBitInvader" => Some(new EightBitInvader(startPosition = new Vector3(),  id = id))
         case _ => None

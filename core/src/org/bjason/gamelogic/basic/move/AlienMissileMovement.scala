@@ -6,7 +6,7 @@ import org.bjason.gamelogic
 import org.bjason.gamelogic.Log._
 import org.bjason.gamelogic.basic.shape
 import org.bjason.gamelogic.basic.shape.{FuelBase, PlayerSprite}
-import org.bjason.gamelogic.{GameInformation, MasterInvader, MinionInvader}
+import org.bjason.gamelogic.{Controller, GameInformation, MasterInvader, MinionInvader}
 import org.bjason.socket.{GameMessage, Websocket}
 
 case class AlienMissileMovement(direction: Vector3, val speed: Float = 50f) extends Movement {
@@ -19,7 +19,7 @@ case class AlienMissileMovement(direction: Vector3, val speed: Float = 50f) exte
 
     me.save()
 
-    me.jsonObject.get.changed=gamelogic.Common.CHANGED
+    //if ( Controller.ticker % 200 == 0 ) me.jsonObject.get.changed=gamelogic.Common.CHANGED
 
     translation.set(direction)
     translation.scl(Gdx.graphics.getDeltaTime() * speed )

@@ -8,15 +8,19 @@ import com.badlogic.gdx.graphics.{Camera, GL20, Pixmap, Texture, VertexAttribute
 import com.badlogic.gdx.math.Vector3
 import org.bjason.gamelogic
 import org.bjason.gamelogic.{Common, MinionInvader, Sound, basic}
-import org.bjason.gamelogic.basic.move.Movement
+import org.bjason.gamelogic.basic.move.{AlienMissileMovement, Movement}
 import org.bjason.socket.{JsonObject, State}
 
-case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radius: Float = 8, var movement: Movement, override val id: String = basic.shape.Basic.getId) extends Basic {
+case class AlienMissileShape(val startPosition: Vector3 = new Vector3, val radius: Float = 8, var missileMovement: AlienMissileMovement, override val id: String = basic.shape.Basic.getId) extends Basic {
 
   lazy val texture = Common.assets.get("data/alienmissile.jpg", classOf[Texture])
   lazy val genModel = makeRect(texture, radius / 3, radius * 0.75f)
   lazy val instance2 = new ModelInstance(genModel);
   lazy val instance3 = new ModelInstance(genModel);
+
+  var movement:Movement = missileMovement
+  jsonObject.get.other = s"${missileMovement.direction.x},${missileMovement.direction.y},${missileMovement.direction.z}"
+
 
   val rollbackScale = 0f
 

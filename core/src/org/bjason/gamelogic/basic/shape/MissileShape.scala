@@ -10,18 +10,25 @@ import org.bjason.gamelogic.basic
 import org.bjason.gamelogic.basic.move
 import org.bjason.socket.{JsonObject, State}
 import org.bjason.gamelogic.Common
-import org.bjason.gamelogic.basic.move.Movement
+import org.bjason.gamelogic.basic.move.{MissileMovement, Movement}
 import org.bjason.gamelogic.basic.shape
 
-case class MissileShape(val startPosition: Vector3 = new Vector3, val radius: Float = 4f, var movement: Movement, override val id:String = basic.shape.Basic.getId) extends Basic  {
+case class MissileShape(val startPosition: Vector3 = new Vector3, val radius: Float = 4f, var missileMovement: Option[MissileMovement] = None, override val id:String = basic.shape.Basic.getId) extends Basic  {
 
   lazy val texture = createBlockTexture("data/cuboid.jpg")
   lazy val genModel = makeBox(texture, radius/2 )
   val rollbackScale= 0f
 
+  var movement:Movement = missileMovement.get
+
   lazy val shape: CollideShape = BulletCollideBox(radius,boundingBox,basicObj=this,fudge = new Vector3(0.7f, 0.7f, 0.7f))
 
   override lazy val jsonObject = Some(new JsonObject(this.getClass.getSimpleName, id, gamelogic.Common.CHANGED, Some(State.ALIVE), instance = instance.transform))
+
+  missileMovement.map{ m =>
+    jsonObject.get.other = s"${m.direction.x},${m.direction.y},${m.direction.z}"
+
+  }
 
   override def move(objects: List[Basic]) = {
     movement.move(objects, this)

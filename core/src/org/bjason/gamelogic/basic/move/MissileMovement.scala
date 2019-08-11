@@ -3,7 +3,7 @@ package org.bjason.gamelogic.basic.move
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector3
 import org.bjason.gamelogic
-import org.bjason.gamelogic.{GameInformation, MinionInvader, basic}
+import org.bjason.gamelogic.{Controller, GameInformation, MinionInvader, basic}
 import org.bjason.gamelogic.Log._
 import org.bjason.gamelogic.basic.shape
 import org.bjason.socket.{GameMessage, Websocket}
@@ -19,7 +19,7 @@ case class MissileMovement(direction: Vector3, val speed: Float = 250f) extends 
 
     me.save()
 
-    me.jsonObject.get.changed=gamelogic.Common.CHANGED
+    //if ( Controller.ticker % 200 == 0 ) me.jsonObject.get.changed=gamelogic.Common.CHANGED
 
     translation.set(direction)
     translation.scl(Gdx.graphics.getDeltaTime() * speed )

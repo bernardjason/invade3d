@@ -63,7 +63,7 @@ object Keyboard extends Movement {
       startHere.mulAdd(InputHandler.direction,-20f)
       val dir = new Vector3(0,0,-1)
       val m = new MissileMovement(direction=dir)
-      val b = new shape.MissileShape(startHere.cpy, movement =m)
+      val b = new shape.MissileShape(startHere.cpy, missileMovement=Some(m))
       b._getTransform().set(q)
       m.objectToControl=b
       gamelogic.Controller.addNewBasic(b)

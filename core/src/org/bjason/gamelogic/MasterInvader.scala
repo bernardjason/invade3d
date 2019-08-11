@@ -173,7 +173,7 @@ class MasterInvader(val startPosition: Vector3 = new Vector3, val radius: Float 
     val startHere = me.cpy()
     val direction = startHere.sub(target).nor().scl(-1)
     val m = new AlienMissileMovement(direction = direction)
-    val b = new AlienMissileShape(me.cpy, movement = m)
+    val b = new AlienMissileShape(me.cpy, missileMovement = m)
     m.objectToControl = b
     gamelogic.Controller.addNewBasic(b)
     Websocket.jsonobjects += b.jsonObject.get
